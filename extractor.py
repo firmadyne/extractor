@@ -86,6 +86,24 @@ class Extractor(object):
                 ofp.write(ifp.read(size))
 
     @staticmethod
+    def magic(indata, mime=False):
+        """
+        Performs file magic while maintaining compatibility with different
+        libraries.
+        """
+
+        try:
+            if mime:
+                mymagic = magic.open(magic.MAGIC_MIME_TYPE)
+            else:
+                mymagic = magic.open(magic.MAGIC_NONE)
+            mymagic.load()
+        except AttributeError:
+            mymagic = magic.Magic(mime)
+            mymagic.file = mymagic.from_file
+        return mymagic.file(indata)
+
+    @staticmethod
     def io_md5(target):
         """
         Performs MD5 with a block size of 64kb.
@@ -419,7 +437,7 @@ class ExtractionItem(object):
         Check if this file is blacklisted for analysis based on file type.
         """
         # First, use MIME-type to exclude large categories of files
-        filetype = magic.from_file(self.item.encode("utf-8", "surrogateescape"),
+        filetype = Extractor.magic(self.item.encode("utf-8", "surrogateescape"),
                                    mime=True)
         if any(s in filetype for s in [b"application/x-executable",
                                        b"application/x-dosexec",
@@ -432,7 +450,7 @@ class ExtractionItem(object):
 
         # Next, check for specific file types that have MIME-type
         # 'application/octet-stream'
-        filetype = magic.from_file(self.item.encode("utf-8", "surrogateescape"))
+        filetype = Extractor.magic(self.item.encode("utf-8", "surrogateescape"))
         if any(s in filetype for s in [b"executable", b"universal binary",
                                        b"relocatable", b"bytecode", b"applet"]):
             self.printf(">> Skipping: %s..." % filetype)

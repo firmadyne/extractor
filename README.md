@@ -19,8 +19,8 @@ Dependencies
 * [python-magic](https://github.com/ahupp/python-magic)
 
 Please use the latest version of `binwalk`. Note that there are two
-Python modules that both share the name `python-magic`; install the one linked
-above, instead of any provided by your Linux distribution.
+Python modules that both share the name `python-magic`; both should be usable,
+but only the one linked above has been tested extensively.
 
 Binwalk
 -------
