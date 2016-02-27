@@ -16,7 +16,6 @@ import traceback
 
 import magic
 import binwalk
-import psycopg2
 
 class Extractor(object):
     """
@@ -202,10 +201,14 @@ class ExtractionItem(object):
         self.item = path
 
         # Database connection
-        self.database = psycopg2.connect(database="firmware", user="firmadyne",
-                                         password="firmadyne",
-                                         host=self.extractor.database) if \
-                                         self.extractor.database else None
+        if self.extractor.database:
+            import psycopg2
+            self.database = psycopg2.connect(database="firmware",
+                                             user="firmadyne",
+                                             password="firmadyne",
+                                             host=self.extractor.database)
+        else:
+            self.database = None
 
         # Checksum
         self.checksum = Extractor.io_md5(path)
@@ -683,9 +686,8 @@ def main():
     parser = argparse.ArgumentParser(description="Extracts filesystem and \
         kernel from Linux-based firmware images")
     parser.add_argument("input", action="store", help="Input file or directory")
-    parser.add_argument("output", action="store", nargs="?", default=None,
-                        help="Output directory for extracted firmware \
-                        (optional)")
+    parser.add_argument("output", action="store", nargs="?", default="images",
+                        help="Output directory for extracted firmware")
     parser.add_argument("-sql ", dest="sql", action="store", default=None,
                         help="Hostname of SQL server")
     parser.add_argument("-nf", dest="rootfs", action="store_false",
