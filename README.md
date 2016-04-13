@@ -25,14 +25,12 @@ but only the one linked above has been tested extensively.
 Binwalk
 -------
 
-* [jefferson](https://github.com/firmadyne/jefferson)
+* [jefferson](https://github.com/sviehb/jefferson)
 * [sasquatch](https://github.com/firmadyne/sasquatch) (optional)
 
-When installing `binwalk`, please use the above forked versions of these two
-extraction utilities. The `jefferson` tool has been improved to support
-extraction of block and character devices, as well as an additional form of
-JFFS2 file compression. The `sasquatch` tool has been modified to make
-SquashFS file extraction errors fatal to prevent false positives.
+When installing `binwalk`, it is optional to use the forked version of the
+`sasquatch` tool, which has been modified to make SquashFS file extraction
+errors fatal to prevent false positives.
 
 Usage
 =====
