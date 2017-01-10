@@ -32,4 +32,4 @@ RUN \
 USER extractor
 WORKDIR /home/extractor
 
-RUN git clone https://github.com/phretor/extractor.git
+RUN git clone https://github.com/firmadyne/extractor.git
