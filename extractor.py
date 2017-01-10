@@ -203,7 +203,7 @@ class ExtractionItem(object):
 
     # Maximum recursion breadth and depth
     RECURSION_BREADTH = 5
-    RECURSION_DEPTH = 2
+    RECURSION_DEPTH = 3
 
     def __init__(self, extractor, path, depth, tag=None):
         # Temporary directory
