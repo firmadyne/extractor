@@ -11,6 +11,16 @@ Firmware images with multiple filesystems are not fully supported; this tool
 cannot reassemble them and will instead extract the first filesystem that has
 sufficient UNIX-like root directories (e.g. `/bin`, `/etc/`, etc.)
 
+For the impatients: Dockerize all the things!
+=============================================
+1. Install [Docker](https://docs.docker.com/engine/getstarted/)
+2. Run the dockerized extractor
+```
+git clone https://github.com/phretor/extractor.git
+cd extractor
+./extract.sh path/to/firmware.img path/to/output/directory
+```
+
 Dependencies
 ============
 * [fakeroot](https://fakeroot.alioth.debian.org)

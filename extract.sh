@@ -11,7 +11,7 @@ docker run --rm -t -i \
   -v ${indir}:/firmware-in:ro \
   -v ${outdir}:/firmware-out \
   "phretor/firmware-extractor:latest" \
-  /home/extractor/extractor/extractor.py \
+  fakeroot /home/extractor/extractor/extractor.py \
   -np \
   /firmware-in/${infilebn} \
   /firmware-out
