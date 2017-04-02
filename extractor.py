@@ -178,6 +178,8 @@ class Extractor(object):
                     self._list.append(os.path.join(path, item))
         elif os.path.isfile(self._input):
             self._list.append(self._input)
+        else:
+            print("!! Cannot read file: %s" % (self._input,))
 
         if self.output_dir and not os.path.isdir(self.output_dir):
             os.makedirs(self.output_dir)
@@ -439,20 +441,20 @@ class ExtractionItem(object):
         # First, use MIME-type to exclude large categories of files
         filetype = Extractor.magic(self.item.encode("utf-8", "surrogateescape"),
                                    mime=True)
-        if any(s in filetype for s in [b"application/x-executable",
-                                       b"application/x-dosexec",
-                                       b"application/x-object",
-                                       b"application/pdf",
-                                       b"application/msword",
-                                       b"image/", b"text/", b"video/"]):
+        if any(s in filetype for s in ["application/x-executable",
+                                       "application/x-dosexec",
+                                       "application/x-object",
+                                       "application/pdf",
+                                       "application/msword",
+                                       "image/", "text/", "video/"]):
             self.printf(">> Skipping: %s..." % filetype)
             return True
 
         # Next, check for specific file types that have MIME-type
         # 'application/octet-stream'
         filetype = Extractor.magic(self.item.encode("utf-8", "surrogateescape"))
-        if any(s in filetype for s in [b"executable", b"universal binary",
-                                       b"relocatable", b"bytecode", b"applet"]):
+        if any(s in filetype for s in ["executable", "universal binary",
+                                       "relocatable", "bytecode", "applet"]):
             self.printf(">> Skipping: %s..." % filetype)
             return True
 
