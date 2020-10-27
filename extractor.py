@@ -417,7 +417,7 @@ class ExtractionItem(object):
                                   self.extractor.do_kernel,
                                   self.extractor.do_rootfs))
 
-            for analysis in [self._check_archive, self._check_firmware,
+            for analysis in [self._check_archive, self._check_encryption, self._check_firmware,
                              self._check_kernel, self._check_rootfs,
                              self._check_compressed]:
                 # Move to temporary directory so binwalk does not write to input
@@ -472,6 +472,24 @@ class ExtractionItem(object):
         an extracted root filesystem.
         """
         return self._check_recursive("archive")
+
+    def _check_encryption(self):
+        print(">> Checking encryption...")
+        f=open(self.item,"rb")
+        header=f.read(4)
+        f.close()
+
+        if header == b"SHRS":
+            print(">>>> D-Link encrypted firmware detected!")
+
+            #Source: https://github.com/0xricksanchez/dlink-decrypt
+            commandlines = [
+                'dd if=%s skip=1756 iflag=skip_bytes |openssl aes-128-cbc -d -p -nopad -nosalt -K "c05fbf1936c99429ce2a0781f08d6ad8" -iv "67c6697351ff4aec29cdbaabf2fbe346" --nosalt -in /dev/stdin -out %s']
+            for commandline in commandlines:
+                tmp_fd, tmp_path = tempfile.mkstemp(dir=self.temp)
+                os.close(tmp_fd)
+                decrypt_result=os.system(commandline % (self.item, tmp_path))
+        return True
 
     def _check_firmware(self):
         """
