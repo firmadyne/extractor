@@ -489,7 +489,8 @@ class ExtractionItem(object):
                 tmp_fd, tmp_path = tempfile.mkstemp(dir=self.temp)
                 os.close(tmp_fd)
                 decrypt_result=os.system(commandline % (self.item, tmp_path))
-        return True
+            return True
+        return False
 
     def _check_firmware(self):
         """
