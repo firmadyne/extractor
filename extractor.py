@@ -474,21 +474,16 @@ class ExtractionItem(object):
         return self._check_recursive("archive")
 
     def _check_encryption(self):
-        print(">> Checking encryption...")
-        f=open(self.item,"rb")
-        header=f.read(4)
-        f.close()
+        header = b""
+        with open(self.item, "rb") as f:
+            header = f.read(4)
 
         if header == b"SHRS":
-            print(">>>> D-Link encrypted firmware detected!")
+            print(">>>> Found D-Link encrypted firmware in %s!" % (self.item))
 
-            #Source: https://github.com/0xricksanchez/dlink-decrypt
-            commandlines = [
-                'dd if=%s skip=1756 iflag=skip_bytes |openssl aes-128-cbc -d -p -nopad -nosalt -K "c05fbf1936c99429ce2a0781f08d6ad8" -iv "67c6697351ff4aec29cdbaabf2fbe346" --nosalt -in /dev/stdin -out %s']
-            for commandline in commandlines:
-                tmp_fd, tmp_path = tempfile.mkstemp(dir=self.temp)
-                os.close(tmp_fd)
-                decrypt_result=os.system(commandline % (self.item, tmp_path))
+            # Source: https://github.com/0xricksanchez/dlink-decrypt
+            command = 'dd if=%s skip=1756 iflag=skip_bytes status=none | openssl aes-128-cbc -d -nopad -nosalt -K "c05fbf1936c99429ce2a0781f08d6ad8" -iv "67c6697351ff4aec29cdbaabf2fbe346" --nosalt -in /dev/stdin -out %s > /dev/null 2>&1' % (self.item, os.path.join(self.temp, "dlink_decrypt"))
+            os.system(command)
             return True
         return False
 
@@ -625,7 +620,6 @@ class ExtractionItem(object):
                     unix = Extractor.io_find_rootfs(module.extractor.directory)
 
                     if not unix[0]:
-                        self.printf(">>>> Extraction failed!")
                         return False
 
                     self.printf(">>>> Found Linux filesystem in %s!" % unix[1])
