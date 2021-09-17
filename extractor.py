@@ -492,8 +492,8 @@ class ExtractionItem(object):
         If this file is of a known firmware type, directly attempt to extract
         the kernel and root filesystem.
         """
-        for module in binwalk.scan(self.item, "-y", "header", signature=True,
-                                   quiet=True):
+        for module in binwalk.scan(self.item, "-y", "header", "--run-as=root", "--preserve-symlinks",
+                                   signature=True, quiet=True):
             for entry in module.results:
                 # uImage
                 if "uImage header" in entry.description:
@@ -583,7 +583,7 @@ class ExtractionItem(object):
         Only Linux kernels are currently extracted.
         """
         if not self.get_kernel_status():
-            for module in binwalk.scan(self.item, "-y", "kernel",
+            for module in binwalk.scan(self.item, "-y", "kernel", "--run-as=root", "--preserve-symlinks",
                                        signature=True, quiet=True):
                 for entry in module.results:
                     if "kernel version" in entry.description:
@@ -611,8 +611,8 @@ class ExtractionItem(object):
         if not self.get_rootfs_status():
             # work-around issue with binwalk signature definitions for ubi
             for module in binwalk.scan(self.item, "-e", "-r", "-y",
-                                       "filesystem", "-y", "ubi", signature=True,
-                                       quiet=True):
+                                       "filesystem", "-y", "ubi", "--run-as=root", "--preserve-symlinks", 
+                                       signature=True, quiet=True):
                 for entry in module.results:
                     self.printf(">>>> %s" % entry.description)
                     break
@@ -649,7 +649,7 @@ class ExtractionItem(object):
         """
         desc = None
         # perform extraction
-        for module in binwalk.scan(self.item, "-e", "-r", "-y", fmt,
+        for module in binwalk.scan(self.item, "-e", "-r", "-y", fmt, "--run-as=root", "--preserve-symlinks",
                                    signature=True, quiet=True):
             for entry in module.results:
                 # skip cpio/initrd files since they should be included with
