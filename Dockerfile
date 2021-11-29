@@ -1,35 +1,27 @@
-FROM python:2-wheezy
+FROM ubuntu:20.04
 
 WORKDIR /root
 
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y git-core wget build-essential liblzma-dev liblzo2-dev zlib1g-dev unrar-free && \
-    pip install -U pip
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y \
+      build-essential \
+      git-core \
+      liblzma-dev \
+      liblzo2-dev \
+      python3-pip \
+      unrar-free \
+      wget \
+      zlib1g-dev && \
+    update-alternatives --install /usr/bin/python python /usr/bin/python3 10 # python should be py3
 
-RUN git clone https://github.com/firmadyne/sasquatch && \
-    cd sasquatch && \
-    make && \
-    make install && \
-    cd .. && \
-    rm -rf sasquatch
-
-RUN git clone https://github.com/devttys0/binwalk.git && \
-    cd binwalk && \
+RUN git clone -q --depth=1 https://github.com/devttys0/binwalk.git /root/binwalk && \
+    cd /root/binwalk && \
     ./deps.sh --yes && \
-    python setup.py install && \
-    pip install 'git+https://github.com/ahupp/python-magic' && \
-    pip install 'git+https://github.com/sviehb/jefferson' && \
-    cd .. && \
-    rm -rf binwalk
+    python3 ./setup.py install && \
+    pip3 install git+https://github.com/ahupp/python-magic && \
+    pip3 install git+https://github.com/sviehb/jefferson && \
+    pip3 install pylzma # jefferson dependency, needs build-essential
 
-RUN \
-  adduser --disabled-password \
-          --gecos '' \
-          --home /home/extractor \
-          extractor
-
-USER extractor
-WORKDIR /home/extractor
-
-RUN git clone https://github.com/firmadyne/extractor.git
+COPY extractor.py /root/
+WORKDIR /root/
