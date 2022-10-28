@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import multiprocessing
 import os
+from stat import S_ISREG
 import shutil
 import tempfile
 import traceback
@@ -111,12 +112,16 @@ class Extractor(object):
         blocksize = 65536
         hasher = hashlib.md5()
 
-        with open(target, 'rb') as ifp:
-            buf = ifp.read(blocksize)
-            while buf:
-                hasher.update(buf)
+        stat = os.stat(target)
+        if not S_ISREG(stat.st_mode):
+            hasher.update(target.encode('utf-8'))
+        else:
+            with open(target, 'rb') as ifp:
                 buf = ifp.read(blocksize)
-            return hasher.hexdigest()
+                while buf:
+                    hasher.update(buf)
+                    buf = ifp.read(blocksize)
+        return hasher.hexdigest()
 
     @staticmethod
     def io_rm(target):
